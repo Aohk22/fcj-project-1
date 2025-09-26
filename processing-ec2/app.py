@@ -7,7 +7,7 @@ from pefile import PEFormatError
 app = FastAPI()
 
 
-@app.post('/api/analyze/')
+@app.post('/api/get_static/')
 async def file_upload(raw_data: Annotated[bytes, File()]):
     try:
         result = analyze_file(raw_data) 

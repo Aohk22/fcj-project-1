@@ -1,3 +1,4 @@
+<sub>auth: ltk</sub>
 To run the server:
 ```
 python -m venv <virtual_env_name>
