@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import FastAPI, File, HTTPException
-from file_processor import analyze_file
+from core.file_processor import analyze_file
 
 from pefile import PEFormatError
 

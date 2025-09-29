@@ -1,6 +1,6 @@
-<sub>auth: ltk</sub>
 To run the server:
 ```
+sudo apt install ssdeep
 python -m venv <virtual_env_name>
 source <virtual_env_name>/bin/activate
 pip install -r requirements.txt
@@ -13,3 +13,5 @@ Documentation: https://fastapi.tiangolo.com/features/.
 
 todo:
 - yara, clamav
+
+<sub>auth: ltk</sub>  

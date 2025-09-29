@@ -1,7 +1,7 @@
 import subprocess as sp
 import magic
 import time
-from trid import tridAnalyze, trdpkg2defs
+from trid.trid import tridAnalyze, trdpkg2defs
 
 
 PATH_TRIDDEF = './triddefs.trd'
@@ -9,7 +9,7 @@ TRID_RESULT_CAP = 4
 
 
 def ssdeep(raw_data: bytes) -> str:
-    output = sp.run(['./ssdeep'], input=raw_data, capture_output=True).stdout
+    output = sp.run(['ssdeep'], input=raw_data, capture_output=True).stdout
     hash_result = output.split(b'\n')[1].split(b',')[0]
     return hash_result.decode()
 
