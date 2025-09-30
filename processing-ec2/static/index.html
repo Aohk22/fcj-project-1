@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Static Analysis Uploader</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #1f2937; }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: #4b5563; border-radius: 20px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #6b7280; }
+  </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'primary-dark': '#111827',
+            'secondary-dark': '#1f2937',
+            'accent-blue': '#3b82f6',
+            'accent-red': '#ef4444',
+            'accent-green': '#10b981',
+          },
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-primary-dark text-gray-100 min-h-screen font-sans flex items-start justify-center p-4 sm:p-8">
+
+  <div class="w-full max-w-5xl bg-secondary-dark rounded-xl shadow-2xl p-6 sm:p-10">
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-2 tracking-tight">
+      Static File Analyzer
+    </h1>
+    <p class="text-gray-400 mb-8">Upload a file (e.g., a PE executable) for static analysis.</p>
+
+    <!-- Upload Form -->
+    <div id="upload-section" class="mb-10 p-6 border border-gray-700 rounded-lg bg-gray-800">
+      <label for="file-upload" class="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-600 rounded-lg cursor-pointer hover:border-accent-blue transition duration-200">
+        <svg class="w-10 h-10 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 014 4v16a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h12a2 2 0 012 2v2"></path>
+        </svg>
+        <span id="file-name" class="text-lg font-semibold text-gray-300">Choose a file or drag it here</span>
+        <input id="file-upload" type="file" class="hidden" onchange="handleFileSelect(event)">
+      </label>
+      <button id="submit-button" onclick="uploadFile()" disabled
+        class="mt-6 w-full py-3 rounded-lg font-bold text-lg transition duration-300
+        bg-accent-blue hover:bg-blue-700 text-white disabled:bg-gray-600 disabled:text-gray-400">
+        Analyze File
+      </button>
+    </div>
+
+    <!-- Status/Error Message -->
+    <div id="message-box" class="hidden p-4 rounded-lg text-center font-medium mb-6"></div>
+
+    <!-- Results -->
+    <div id="results-container" class="hidden">
+      <h2 class="text-2xl font-bold text-white mb-4 border-b border-gray-700 pb-2">Analysis Report</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Column 1 -->
+        <div class="lg:col-span-1 space-y-6">
+          <div id="hashes-section" class="bg-gray-800 p-4 rounded-lg"></div>
+          <div id="filetype-section" class="bg-gray-800 p-4 rounded-lg"></div>
+          <div id="meta-section" class="bg-gray-800 p-4 rounded-lg"></div>
+        </div>
+        <!-- Column 2 & 3 -->
+        <div class="lg:col-span-2 bg-gray-800 p-4 rounded-lg max-h-[80vh] overflow-y-auto custom-scrollbar">
+          <h3 class="text-xl font-semibold mb-3 text-white sticky top-0 bg-gray-800 py-1">PE Sections</h3>
+          <div id="pe-sections-list" class="space-y-4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const API_ENDPOINT = "http://127.0.0.1:8000/api/get_static/";
+
+  let selectedFile = null;
+  const fileNameDisplay = document.getElementById('file-name');
+  const submitButton = document.getElementById('submit-button');
+  const messageBox = document.getElementById('message-box');
+  const resultsContainer = document.getElementById('results-container');
+  const hashesSection = document.getElementById('hashes-section');
+  const fileTypeSection = document.getElementById('filetype-section');
+  const metaSection = document.getElementById('meta-section');
+  const peSectionsList = document.getElementById('pe-sections-list');
+
+  function showMessage(msg, type) {
+    messageBox.textContent = msg;
+    messageBox.className = "p-4 rounded-lg text-center font-medium mb-6";
+    if (type === 'error') messageBox.classList.add("bg-red-900/50","text-accent-red","border","border-accent-red");
+    if (type === 'success') messageBox.classList.add("bg-green-900/50","text-accent-green","border","border-accent-green");
+    if (type === 'loading') messageBox.classList.add("bg-blue-900/50","text-accent-blue","border","border-accent-blue");
+    messageBox.classList.remove("hidden");
+  }
+  function hideMessage(){ messageBox.classList.add("hidden"); }
+
+  function handleFileSelect(e){
+    const file = e.target.files[0];
+    if(file){ selectedFile=file; fileNameDisplay.textContent=file.name; submitButton.disabled=false; hideMessage(); resultsContainer.classList.add("hidden"); }
+  }
+
+  function renderKeyValuePair(key, value) {
+    if (!value) value = "N/A";
+    return `<div class="flex justify-between py-1 border-b border-gray-700 last:border-b-0">
+      <span class="text-gray-400">${key}:</span>
+      <span class="font-mono text-sm text-white break-all">${value}</span></div>`;
+  }
+
+  function renderReport(report){
+    // Hashes
+    let hashesHtml = "";
+    for(const [k,v] of Object.entries(report.hashes || {})){
+      hashesHtml += renderKeyValuePair(k.toUpperCase(), v || "Unavailable");
+    }
+    hashesSection.innerHTML = `<h3 class="text-xl font-semibold mb-3 text-accent-blue">Hashes</h3>${hashesHtml}`;
+
+    // File Type
+    let ftHtml = renderKeyValuePair("Magic", report.file_type?.python_magic || "Unavailable");
+    ftHtml += "<h4 class='text-gray-400 mt-4 mb-2'>TRID Results:</h4>";
+    if(report.file_type?.trid?.length){
+      ftHtml += "<ul class='list-disc list-inside space-y-1 pl-4'>";
+      report.file_type.trid.forEach(it => {
+        ftHtml += `<li class="font-mono text-sm text-gray-300">${it}</li>`;
+      });
+      ftHtml += "</ul>";
+    } else {
+      ftHtml += "<p class='text-gray-500 text-sm italic'>No TRID results available.</p>";
+    }
+    fileTypeSection.innerHTML = `<h3 class="text-xl font-semibold mb-3 text-accent-blue">File Type</h3>${ftHtml}`;
+
+    // Metadata
+    let metaHtml = renderKeyValuePair("Size", report.meta ? `${(report.meta.size/1024).toFixed(2)} KB` : "N/A");
+    metaHtml += renderKeyValuePair("Architecture", report.meta?.architecture || "N/A");
+    metaHtml += renderKeyValuePair("Timestamp", report.meta?.date || "N/A");
+    metaHtml += renderKeyValuePair("Claimed CRC", report.meta?.crc_claim || "N/A");
+    metaHtml += renderKeyValuePair("Calculated CRC", report.meta?.crc_calcd || "N/A");
+    metaSection.innerHTML = `<h3 class="text-xl font-semibold mb-3 text-accent-blue">Metadata</h3>${metaHtml}`;
+
+    // Sections
+    let secHtml = "";
+    if(report.pe_sections?.length){
+      report.pe_sections.forEach(s=>{
+        const suspicious = s.suspicious ? 'border-accent-red text-accent-red bg-red-900/20' : 'border-gray-700';
+        secHtml += `<div class="border-l-4 p-4 rounded-md ${suspicious} bg-secondary-dark shadow-md">
+          <div class="flex items-center justify-between mb-2 border-b border-gray-700 pb-2">
+            <h4 class="text-lg font-bold text-white">${(s.name || "").replace(/\0/g,'')}</h4>
+            ${s.suspicious?'<span class="text-sm font-semibold px-2 py-0.5 rounded-full bg-accent-red text-white">SUSPICIOUS</span>':""}
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
+            ${renderKeyValuePair("Virtual Address", s.virt_addr ? "0x"+s.virt_addr.toString(16).toUpperCase() : "N/A")}
+            ${renderKeyValuePair("Virtual Size", s.virt_size || "N/A")}
+            ${renderKeyValuePair("Physical Size", s.phys_size || "N/A")}
+            ${renderKeyValuePair("MD5 Hash", s.md5 || "N/A")}
+            ${renderKeyValuePair("Entropy", (s.entropy ? s.entropy.toFixed(4) : "N/A"))}
+          </div></div>`;
+      });
+    } else {
+      secHtml="<p class='text-gray-500 text-center py-8'>No PE Sections found.</p>";
+    }
+    peSectionsList.innerHTML=secHtml;
+
+    resultsContainer.classList.remove("hidden");
+  }
+
+  async function uploadFile(){
+    if(!selectedFile){showMessage("Please select a file first.","error");return;}
+    resultsContainer.classList.add("hidden"); showMessage(`Uploading "${selectedFile.name}"...`,"loading"); submitButton.disabled=true;
+    const formData=new FormData(); formData.append("raw_data", selectedFile);
+    try{
+      const res=await fetch(API_ENDPOINT,{method:"POST",body:formData});
+      if(!res.ok){const t=await res.text();showMessage("Analysis Failed: "+t,"error");return;}
+      const report=await res.json();
+      if(!report || typeof report!=="object"){showMessage("Invalid response from server.","error");return;}
+      showMessage("Analysis Complete!","success"); renderReport(report);
+    }catch(err){console.error(err);showMessage("Network error: "+err.message,"error");}
+    finally{submitButton.disabled=false;}
+  }
+</script>
+
+</body>
+</html>
