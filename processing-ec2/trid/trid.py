@@ -260,62 +260,63 @@ def errprint(msg, filename=os.path.basename(sys.argv[0])):
     print(txt, file=sys.stderr)
 
 
-def trdpkg2defs(filename, usecache=False) -> list:
+def trdpkg2defs(filename, usecache=False) -> TrIDDef:
     """
     Get a list of TrID's definition from a TRD package file
     """
     path = Path(filename)
-    cachefilename = "." + path.name + ".cache"
+    cachefilename = '.' + path.name + ".cache"
     cachefilename = path.parent / cachefilename
     cached = False
     updatecache = False
 
-    # Try cached first
+    ts = perf_counter()
     if usecache and os.path.exists(cachefilename):
         if os.path.getmtime(cachefilename) > os.path.getmtime(filename):
-            try:
-                with open(cachefilename, "rb") as f:
-                    triddefs = pickle.load(f)
-                return triddefs
-            except Exception:
-                pass
+            f = open(cachefilename, "rb")
+            triddefs = pickle.load(f)
+            f.close
+            cached = True
 
-    # Try reading defs
-    if not os.path.exists(filename):
-        # gracefully fallback
-        print(f"[TrID] Warning: definition file {filename} not found.")
-        return []
+    if not cached:
+        triddefs = []
+        # read the entire .trd file
+        try:
+            with open(filename, "rb") as f:
+                package = f.read()
+        except IOError:
+            # errprint(f"I/O Error: unable to read TrID definitions from file {filename}.")
+            sys.exit(1)
 
-    try:
-        with open(filename, "rb") as f:
-            package = f.read()
-    except IOError:
-        print(f"[TrID] Error: unable to read TrID definitions from {filename}")
-        return []
+        # couple of basic sanity checks
+        
+        if package[:4]+package[8:12] != b"RIFFTRID":
+            # errprint(f"Error: file {filename} is not a TrID definitions package!")
+            sys.exit(1)
 
-    # sanity checks
-    if package[:4] + package[8:12] != b"RIFFTRID":
-        print(f"[TrID] Error: invalid defs package {filename}")
-        return []
+        pkglen = unpack_from("<i", package, offset=4)[0] 
+        if (pkglen + 8) != len(package):
+            # errprint(f"Error: TrID definitions package {filename} lenght mismatch!")
+            sys.exit(1)
 
         # decoding...
 
-    infoBlock = package[12:12+12]
-    defsnum = unpack_from("<i", infoBlock, offset = len(infoBlock)-4)[0]
-    blen= unpack_from("<i", package, offset = 28)[0]
-    package = package[32:32+blen]
+        infoBlock = package[12:12+12]
+        defsnum = unpack_from("<i", infoBlock, offset = len(infoBlock)-4)[0]
+        blen= unpack_from("<i", package, offset = 28)[0]
+        package = package[32:32+blen]
 
-    loopdefpos = 0
-    totok = 0
-    for i in range(defsnum):
-        if  loopdefpos < len(package) - 8:
-            chunkid = package[loopdefpos:loopdefpos+4]
-            if chunkid == b"DEF ":
-                blen = unpack_from("<i", package, offset = loopdefpos+4)[0]
-                defblock = package[loopdefpos+8:loopdefpos+8+blen]
-                loopdefpos += 8 + blen
-                triddef = trdblock2def(defblock)
-                triddefs.append(triddef)
+        loopdefpos = 0
+        totok = 0
+        for i in range(defsnum):
+            if  loopdefpos < len(package) - 8:
+                chunkid = package[loopdefpos:loopdefpos+4]
+                if chunkid == b"DEF ":
+                    blen = unpack_from("<i", package, offset = loopdefpos+4)[0]
+                    defblock = package[loopdefpos+8:loopdefpos+8+blen]
+                    loopdefpos += 8 + blen
+                    triddef = trdblock2def(defblock)
+                    triddefs.append(triddef)
         updatecache = True
     te= perf_counter()
     #print(f"  (Time: {(te-ts):.2f})") #info
