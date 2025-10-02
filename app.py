@@ -4,7 +4,7 @@ from core.file_processor import analyze_file
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pathlib import Path
-
+import sys
 from pefile import PEFormatError
 
 app = FastAPI()
@@ -19,13 +19,19 @@ async def file_upload(raw_data: Annotated[bytes, File()]):
     return result
 
 
+def find_index_html() -> Path:
+    base_path = Path(__file__).parent
+    index_file = next(base_path.rglob("index.html"), None)
+    if index_file is None:
+        print("index.html not found!", file=sys.stderr)
+        sys.exit(1)
+    return index_file
 
-frontend_path = Path(__file__).parent / "webserver_ec2"
+index_path = find_index_html()
+frontend_path = index_path.parent
+
 app.mount("/static", StaticFiles(directory=frontend_path), name="static")
 
 @app.get("/")
-async def serve_index():
-    index_file = frontend_path / "index.html"
-    if index_file.exists():
-        return FileResponse(index_file)
-    return {"error": "index.html not found"}
+async def root():
+    return FileResponse(index_path)
