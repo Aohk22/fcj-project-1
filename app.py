@@ -20,7 +20,7 @@ async def file_upload(raw_data: Annotated[bytes, File()]):
 
 
 
-frontend_path = Path(__file__).parent
+frontend_path = Path(__file__).parent / "webserver_ec2"
 app.mount("/static", StaticFiles(directory=frontend_path), name="static")
 
 @app.get("/")
