@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import requests
 
@@ -7,6 +7,10 @@ CORS(app)
 
 # Change to backend server IP
 FASTAPI_URL = "http://172.27.158.118:9090/api/get_static/"
+
+@app.route("/")
+def index():
+    return render_template("index.html")
 
 @app.route("/analyze", methods=["POST"])
 def analyze_file():
