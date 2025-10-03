@@ -107,7 +107,17 @@ resource "aws_launch_template" "web-server-lt" {
   }
   user_data = base64encode(<<-EOF
               #!/bin/bash
-              touch createdfile
+              apt-get update -y
+              apt-get install -y git ssdeep python3 python3-venv python3-pip
+              mkdir /app
+              cd /app
+              git clone https://github.com/Aohk22/fcj-project-1.git
+              cd fcj-project-1
+              git switch webserver-ec2
+              python -m venv .venv
+              source .venv/bin/activate
+              pip install -r requirements.txt
+              fastapi run --port 80 --host 0.0.0.0 &
               EOF
   )
   tag_specifications {
@@ -138,10 +148,17 @@ resource "aws_launch_template" "processing-service-lt" {
   }
   user_data = base64encode(<<-EOF
               #!/bin/bash
-              yum install -y python3  # or apt-get -y install python3
-              cd /tmp
-              echo "OK" > index.html
-              nohup python3 -m http.server 6969 --bind 0.0.0.0 > /var/log/http.log 2>&1 &
+              apt-get update -y
+              apt-get install -y git ssdeep python3 python3-venv python3-pip
+              mkdir /app
+              cd /app
+              git clone https://github.com/Aohk22/fcj-project-1.git
+              cd fcj-project-1
+              git switch file-processing-service
+              python -m venv .venv
+              source .venv/bin/activate
+              pip install -r requirements.txt
+              nohup fastapi run --port 6969 --host 0.0.0.0 > /var/log/http.log 2>&1 &
               EOF
   )
   tag_specifications {
