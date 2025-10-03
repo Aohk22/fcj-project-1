@@ -17,6 +17,6 @@
 
 ## Diagram for AWS
 
-![](high-level-view.drawio.pn)
+![](high-level-view.drawio.png)
 
 
