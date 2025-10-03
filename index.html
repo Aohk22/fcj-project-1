@@ -139,7 +139,7 @@
             resultDiv.innerHTML = "<em>Analyzing...</em>";
 
             try {
-                const response = await fetch(`${serverAddress}/api/get_static/`, {
+                const response = await fetch('http://<file-server-ip>:9090/api/get_static/', {
                     method: 'POST',
                     body: formData
                 });
@@ -158,4 +158,5 @@
     </script>
 </body>
 </html>
+
 
