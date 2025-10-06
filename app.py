@@ -1,122 +1,22 @@
-# query_service/app.py
-from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
-import boto3
-import json
-from decimal import Decimal
-from custom_types.types import StaticReport
-import requests
-import hashlib
+# query-service/app.py (với db_handler riêng)
+from typing import Annotated
+from fastapi import FastAPI, HTTPException, Query
+from .db_handler import get_static_report_by_hash # Import từ db_handler
 
 app = FastAPI()
 
-# Cấu hình CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Cấu hình DynamoDB
-ENDPOINT_URL = 'http://host-machine.internal:8000' 
-TABLE_NAME = 'analysis_results'
-
-#
-FILE_PROCESSING_API_URL = "http://172.27.158.118:9090/api/analyze/" # doi dia chi
-
-# Hàm trợ giúp để lấy DynamoDB resource
-def get_dynamodb_resource():
+@app.get('/query_static/')
+async def query_static_report(file_hash: Annotated[str, Query(description="SHA256 hash of the file to query")]):
+    """
+    Truy vấn báo cáo phân tích tĩnh từ DynamoDB bằng SHA256 hash của file.
+    """
     try:
-        return boto3.resource('dynamodb', endpoint_url=ENDPOINT_URL)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to connect to DynamoDB: {e}")
+        report = get_static_report_by_hash(file_hash)
 
-@app.get("/")
-async def root():
-    return {"message": "Query Service is running!"}
-
-@app.post("/api/get_static/")
-async def get_static_report(raw_data: UploadFile = File(...)):
-    # 1. Lấy dữ liệu file
-    file_content = await raw_data.read()
-
-    # 2. Tính toán hash của file
-    sha256_hash = hashlib.sha256(file_content).hexdigest()
-
-    dynamodb = get_dynamodb_resource()
-    table = dynamodb.Table(TABLE_NAME)
-
-    # 3. Truy vấn database cho báo cáo
-    try:
-        response = table.get_item(
-            Key={
-                'file_hash': sha256_hash,
-                'report_type': 'static'
-            }
-        )
-        item = response.get('Item')
+        if report is None:
+            raise HTTPException(status_code=404, detail=f"No static report found for hash: {file_hash}")
         
-        if item:
-            
-            serialized_data = item.get('data', {})
-           
-            
-            def convert_decimals_to_floats(obj):
-                if isinstance(obj, Decimal):
-                    return float(obj)
-                if isinstance(obj, dict):
-                    return {k: convert_decimals_to_floats(v) for k, v in obj.items()}
-                if isinstance(obj, list):
-                    return [convert_decimals_to_floats(elem) for elem in obj]
-                return obj
-
-            # Kiểm tra xem 'data' có phải là một dictionary hay không
-            if 'data' in item and isinstance(item['data'], dict):
-                # Nếu nó đã là một dictionary (map DynamoDB), chuyển đổi các Decimal bên trong
-                report_data = convert_decimals_to_floats(item['data'])
-                return JSONResponse(content=report_data)
-            else:
-                
-                return JSONResponse(content={"message": "Report found but data structure is unexpected.", "report": item})
+        return report
 
     except Exception as e:
-       
-        print(f"Error querying DynamoDB: {e}")
-        
-
-    
-    try:
-       
-        files = {'raw_data': (raw_data.filename, file_content, raw_data.content_type)}
-        response = requests.post(FILE_PROCESSING_API_URL, files=files)
-        response.raise_for_status()  # Ném lỗi cho phản hồi trạng thái HTTP xấu (4xx hoặc 5xx)
-
-        analysis_report = response.json()
-
-      
-        try:
-            validated_report = StaticReport.model_validate(analysis_report)
-            # Chuyển đổi Decimal cho DynamoDB
-            data_to_save: dict = json.loads(validated_report.model_dump_json(), parse_float=Decimal)
-            
-            table.put_item(
-                Item={
-                    'file_hash': sha256_hash, # Dùng hash đã tính toán
-                    'report_type': 'static',
-                    'data': data_to_save, # Lưu trực tiếp dict đã chuyển đổi Decimal
-                }
-            )
-            print(f"Successfully saved new report for hash: {sha256_hash}")
-        except Exception as save_err:
-            print(f"Error saving new report to DynamoDB: {save_err}")
-            # Dù có lỗi lưu, vẫn trả về báo cáo phân tích
-
-        return JSONResponse(content=analysis_report)
-
-    except requests.exceptions.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get analysis from processing service: {e}")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
