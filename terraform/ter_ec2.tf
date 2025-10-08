@@ -45,6 +45,7 @@
 resource "aws_instance" "query-srvc-aza-ec2" {
   ami                      = "ami-01361d3186814b895"
   instance_type            = "t3.micro"
+  private_ip = "10.0.102.50"
   iam_instance_profile = "ec2-dynamodb-profile"
 
   key_name = aws_key_pair.deployer.key_name
@@ -55,6 +56,22 @@ resource "aws_instance" "query-srvc-aza-ec2" {
     aws_security_group.ssh.id,
     aws_security_group.icmp.id
   ]
+
+  user_data_base64 = base64encode(<<-EOF
+              #!/bin/bash
+              apt-get update -y
+              apt-get install -y git python3 python3-venv python3-pip
+              mkdir /app
+              cd /app
+              git clone https://github.com/Aohk22/fcj-project-1.git
+              cd fcj-project-1
+              git switch query-service
+              python -m venv .venv
+              source .venv/bin/activate
+              pip install -r requirements.txt
+              nohup fastapi run --port 7070 --host 0.0.0.0 > /var/log/http.log 2>&1 &
+              EOF
+  )
 
   tags = {
     Name = "query-service-instance-a"
@@ -77,6 +94,7 @@ resource "aws_instance" "query-srvc-azb-ec2" {
   ami                      = "ami-01361d3186814b895"
   instance_type            = "t3.micro"
   iam_instance_profile = "ec2-dynamodb-profile"
+  private_ip = "10.0.103.50"
 
   key_name = aws_key_pair.deployer.key_name
 
@@ -86,6 +104,22 @@ resource "aws_instance" "query-srvc-azb-ec2" {
     aws_security_group.ssh.id,
     aws_security_group.icmp.id
   ]
+
+  user_data_base64 = base64encode(<<-EOF
+              #!/bin/bash
+              apt-get update -y
+              apt-get install -y git python3 python3-venv python3-pip
+              mkdir /app
+              cd /app
+              git clone https://github.com/Aohk22/fcj-project-1.git
+              cd fcj-project-1
+              git switch query-service
+              python -m venv .venv
+              source .venv/bin/activate
+              pip install -r requirements.txt
+              nohup fastapi run --port 7070 --host 0.0.0.0 > /var/log/http.log 2>&1 &
+              EOF
+  )
 
   tags = {
     Name = "query-service-instance-b"
@@ -122,7 +156,7 @@ resource "aws_launch_template" "web-server-lt" {
               python -m venv .venv
               source .venv/bin/activate
               pip install -r requirements.txt
-              fastapi run --port 80 --host 0.0.0.0 &
+              nohup fastapi run --port 80 --host 0.0.0.0 > /var/log/http.log 2>&1 &
               EOF
   )
   tag_specifications {
