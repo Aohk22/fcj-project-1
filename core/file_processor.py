@@ -18,7 +18,7 @@ def get_pe_section_info(section) -> ctypes.SectionPESection:
     return pe_section
 
 
-def analyze_file(raw_data: bytes) -> dict:
+def analyze_file(raw_data: bytes) -> ctypes.StaticReport:
 
     pe = pefile.PE(data=raw_data)
 
@@ -49,4 +49,4 @@ def analyze_file(raw_data: bytes) -> dict:
         pe_sections = [get_pe_section_info(section) for section in pe.sections],
     )
 
-    return static_report.model_dump()
+    return static_report
