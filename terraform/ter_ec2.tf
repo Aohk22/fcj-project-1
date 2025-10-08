@@ -43,8 +43,9 @@
 #   }
 # }
 resource "aws_instance" "query-srvc-aza-ec2" {
-  ami           = "ami-01361d3186814b895"
-  instance_type = "t3.micro"
+  ami                      = "ami-01361d3186814b895"
+  instance_type            = "t3.micro"
+  iam_instance_profile = "ec2-dynamodb-profile"
 
   key_name = aws_key_pair.deployer.key_name
 
@@ -73,8 +74,9 @@ resource "aws_instance" "query-srvc-aza-ec2" {
 #   }
 # }
 resource "aws_instance" "query-srvc-azb-ec2" {
-  ami           = "ami-01361d3186814b895"
-  instance_type = "t3.micro"
+  ami                      = "ami-01361d3186814b895"
+  instance_type            = "t3.micro"
+  iam_instance_profile = "ec2-dynamodb-profile"
 
   key_name = aws_key_pair.deployer.key_name
 
@@ -95,6 +97,9 @@ resource "aws_launch_template" "web-server-lt" {
   name          = "web-server-lt"
   image_id      = "ami-01361d3186814b895" # AMI ID of your app
   instance_type = "t3.micro"
+  iam_instance_profile {
+    name = aws_iam_instance_profile.ec2-dynamodb-profile.name
+  }
 
   key_name = aws_key_pair.deployer.key_name
 
@@ -135,6 +140,9 @@ resource "aws_launch_template" "processing-service-lt" {
   name          = "processing-service-lt"
   image_id      = "ami-01361d3186814b895" # AMI ID of your app
   instance_type = "t3.micro"
+  iam_instance_profile {
+    name = aws_iam_instance_profile.ec2-dynamodb-profile.name
+  }
 
   key_name = aws_key_pair.deployer.key_name
 
