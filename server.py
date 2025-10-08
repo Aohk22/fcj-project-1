@@ -7,10 +7,9 @@ from io import BytesIO
 
 app = Flask(__name__)
 CORS(app)
-# change to processing server IP
-PROCESSING_URL = "http://172.27.158.118:9090/get_static/"
-# change to query server IP
-QUERY_URL = "http://172.27.158.118:8000/query_static/"
+
+PROCESSING_URL = "http://services.system.internal/process/"
+QUERY_URL = "http://services.system.internal/"
 
 @app.route("/")
 def index():
