@@ -5,6 +5,7 @@ from decimal import Decimal
 import json
 
 ENDPOINT_URL = 'http://host-machine.internal:8000'
+#ENDPOINT_URL = 'http://localhost:8000' 
 TABLE_NAME = 'analysis_results'
 
 def get_static_report_by_hash(file_hash: str) -> dict | None:
