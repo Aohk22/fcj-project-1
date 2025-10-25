@@ -22,4 +22,12 @@
 ### To do
 
 - CI/CD: push -> ami image build -> instance refresh.
+  - Create Image builder pipeline.
+  - Fix Terraform launch template to use new ami image.
+  - Update workflow files for
+    - Image build, instance refresh
 - Update diagram.
+- Implement dynamic analysis into file processing.
+  - Build repeatable process for analysing files.
+    - Get panda-re working.
+    - Decide which plugins to use.
