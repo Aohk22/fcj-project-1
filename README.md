@@ -21,4 +21,5 @@
 
 ### To do
 
-CI/CD: push -> ami image build -> instance refresh.
+- CI/CD: push -> ami image build -> instance refresh.
+- Update diagram.
