@@ -19,4 +19,6 @@
 
 ![](high-level-view.drawio.png)
 
+### To do
 
+CI/CD: push -> ami image build -> instance refresh.
