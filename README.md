@@ -26,4 +26,4 @@
   - Fix Terraform launch template to use new ami image.
   - Update workflow files for
     - Image build, instance refresh
-- Update diagram.
+- Terraform code refactor
