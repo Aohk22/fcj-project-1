@@ -1,4 +1,4 @@
-# Application Load Balancer for Web Servers
+# application load balancer for web servers
 resource "aws_lb" "websrvr-lb" {
   name               = "websrvr-lb"
   internal           = false
@@ -42,7 +42,7 @@ resource "aws_autoscaling_group" "websrvr-asg" {
 }
 
 
-# Application Load Balancer for File Processing Services and Query Services
+# application load balancer for file processing services and query services
 resource "aws_lb" "services-lb" {
   name               = "services-lb"
   internal           = true
@@ -119,15 +119,32 @@ resource "aws_autoscaling_group" "procsrvc-asg" {
     version = "$Latest"
   }
 }
+resource "aws_autoscaling_group" "querysrvc-asg" {
+  name              = "querysrvc-asg"
+  max_size          = 1
+  min_size          = 1
+  desired_capacity  = 1
+  target_group_arns = [aws_lb_target_group.querysrvc-lb-tg.arn]
+
+  vpc_zone_identifier = [
+    aws_subnet.terprovd-prv1-subnet.id,
+    aws_subnet.terprovd-prv2-subnet.id
+  ]
+
+  launch_template {
+    id      = aws_launch_template.query-service-lt.id
+    version = "$Latest"
+  }
+}
 # no autoscaling for query service
 # query service in different AZs
-resource "aws_lb_target_group_attachment" "services-lb-tg-attachment-1" {
-  target_group_arn = aws_lb_target_group.querysrvc-lb-tg.arn
-  target_id        = aws_instance.query-srvc-aza-ec2.id
-  port             = 7070
-}
-resource "aws_lb_target_group_attachment" "services-lb-tg-attachment-2" {
-  target_group_arn = aws_lb_target_group.querysrvc-lb-tg.arn
-  target_id        = aws_instance.query-srvc-azb-ec2.id
-  port             = 7070
-}
+# resource "aws_lb_target_group_attachment" "services-lb-tg-attachment-1" {
+#   target_group_arn = aws_lb_target_group.querysrvc-lb-tg.arn
+#   target_id        = aws_instance.query-srvc-aza-ec2.id
+#   port             = 7070
+# }
+# resource "aws_lb_target_group_attachment" "services-lb-tg-attachment-2" {
+#   target_group_arn = aws_lb_target_group.querysrvc-lb-tg.arn
+#   target_id        = aws_instance.query-srvc-azb-ec2.id
+#   port             = 7070
+# }
