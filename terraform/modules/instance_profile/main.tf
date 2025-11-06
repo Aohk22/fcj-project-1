@@ -16,6 +16,6 @@ resource "aws_iam_role_policy_attachment" "this_attachment" {
 
 // connector from ec2 service to iam role policies.
 resource "aws_iam_instance_profile" "this" {
-  name = var.instance_profile_name
+  name = var.name
   role = aws_iam_role.this_role.name
 }

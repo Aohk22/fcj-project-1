@@ -13,3 +13,10 @@ variable "component_version" {
   default = "1.0.0"
 }
 
+variable "recipe_name" { type = string }
+variable "recipe_parent_img" { type = string }
+
+variable "recipe_version" {
+  type    = string
+  default = "1.0.0"
+}

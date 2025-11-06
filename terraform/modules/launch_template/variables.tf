@@ -3,7 +3,10 @@ variable "image_id" { type = string }
 variable "instance_type" { type = string }
 variable "key_name" { type = string }
 variable "user_data" { type = string }
-variable "iam_instance_profile_name" { type = string }
+variable "iam_instance_profile_name" {
+  type    = string
+  default = ""
+}
 
 variable "network_interfaces" {
   type = object({

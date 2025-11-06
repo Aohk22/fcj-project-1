@@ -1,5 +1,5 @@
 variable "az" {
-  type = bool
+  type = string
 }
 
 variable "vpc_id" {
@@ -12,10 +12,6 @@ variable "cidr_block" {
 
 variable "map_public_ip" {
   type = bool
-}
-
-variable "map_public_ip" {
-  type = string
 }
 
 variable "name" {

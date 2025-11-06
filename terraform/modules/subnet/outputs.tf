@@ -1,3 +1,3 @@
-output "subnet_id" {
+output "id" {
   value = aws_subnet.this.id
 }
