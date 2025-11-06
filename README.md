@@ -1,3 +1,1 @@
-http://host-machine.internal:8000
-
-DynamoDB Local: ENDPOINT_URL = 'http://localhost:8000'
+Run command: `fastapi run --port 4101 --host 0.0.0.0`
