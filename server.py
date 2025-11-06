@@ -8,8 +8,8 @@ from io import BytesIO
 app = Flask(__name__)
 CORS(app)
 
-PROCESSING_URL = "http://services.system.internal/process/"
-QUERY_URL = "http://services.system.internal/"
+PROCESSING_URL = "http://local-api.dev.lan/upload/"
+QUERY_URL = "http://local-api.dev.lan/query/"
 
 @app.route("/")
 def index():
