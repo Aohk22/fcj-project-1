@@ -4,12 +4,10 @@ from boto3.dynamodb.conditions import Key
 from decimal import Decimal
 import json
 
-ENDPOINT_URL = 'http://host-machine.internal:8000'
-#ENDPOINT_URL = 'http://localhost:8000' 
 TABLE_NAME = 'analysis_results'
 
 def get_static_report_by_hash(file_hash: str) -> dict | None:
-    dynamodb = boto3.resource('dynamodb', endpoint_url=ENDPOINT_URL)
+    dynamodb = boto3.resource('dynamodb', region_name='ap-southeast-2')
     table = dynamodb.Table(TABLE_NAME)
 
     response = table.query(
