@@ -1,0 +1,3 @@
+[submodule "decompiler-explorer"]
+	path = decompiler-explorer
+	url = https://github.com/decompiler-explorer/decompiler-explorer.git
