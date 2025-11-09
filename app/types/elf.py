@@ -8,8 +8,8 @@ class FileELFHeader(BaseModel):
     machine: str
 
 class FileELFSymEntry(BaseModel):
-    value: int
-    size: int
+    value: str
+    size: str
     type: str
     vis: str
     name: str

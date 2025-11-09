@@ -105,8 +105,8 @@ def _getELFSymEntries() -> list[FileELFSymEntry]:
         fields = re.split(r'\s+', sym[i])[2:]
         if fields:
             result.append(FileELFSymEntry(
-                value = int(fields[0]),
-                size = int(fields[1]),
+                value = fields[0],
+                size = fields[1],
                 type = fields[2],
                 vis = fields[4],
                 name = fields[6],
