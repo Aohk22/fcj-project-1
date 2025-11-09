@@ -43,7 +43,7 @@ resource "aws_lb_listener_rule" "fhandle_lbl_rule" {
   priority     = 10
   condition {
     path_pattern {
-      values = ["/upload/"]
+      values = ["/upload/*"]
     }
   }
   action {
@@ -57,7 +57,7 @@ resource "aws_lb_listener_rule" "fquery_lbl_rule" {
   priority     = 20
   condition {
     path_pattern {
-      values = ["/query/"]
+      values = ["/query/*"]
     }
   }
   action {

@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 aws autoscaling start-instance-refresh --strategy Rolling --auto-scaling-group-name fhandle-asg
 aws autoscaling start-instance-refresh --strategy Rolling --auto-scaling-group-name fquery-asg
