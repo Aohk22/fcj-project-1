@@ -24,10 +24,6 @@ function syntaxHighlight(json) {
   });
 }
 
-function setLog(text) {
-  result.innerHTML = text;
-}
-
 form.addEventListener('submit', async (e) => {
   const formData = new FormData();
 
@@ -88,14 +84,15 @@ form.addEventListener('submit', async (e) => {
       result.innerHTML += syntaxHighlight(data['general']['hashes']);
       result.innerHTML += syntaxHighlight(data['general']['fileType']);
       result.innerHTML += '<h3>Type Specific</h3>';
-      for (var key in Object.keys(data).slice(1)) {
+      for (var key of Object.keys(data).slice(1)) {
         result.innerHTML += syntaxHighlight(data[key]);
       }
       result.appendChild(spanStrs);
       result.appendChild(spanDcmp);
 
+    })
+    .catch((err) => { 
+      console.log(err);
+      result.innerHTML = `<strong>Error:</strong> ${err.detail}`;
     });
-
-  // resultDiv.innerHTML = `<strong>Error:</strong> ${errData.detail || response.statusText}`;
-  // resultDiv.innerHTML = syntaxHighlight(data);
 });
