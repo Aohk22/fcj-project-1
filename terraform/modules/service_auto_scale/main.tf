@@ -6,6 +6,8 @@ resource "aws_lb_target_group" "this_lbtg" {
   port     = var.tg_port
   protocol = var.tg_protocol
   vpc_id   = var.tg_vpc_id
+  deregistration_delay = var.tg_dereg_delay
+
   health_check {
     path                = var.hc_path
     port                = var.hc_port
@@ -15,6 +17,15 @@ resource "aws_lb_target_group" "this_lbtg" {
     timeout             = 5
     healthy_threshold   = 3
     unhealthy_threshold = 2
+  }
+
+  dynamic "stickiness" {
+    for_each = var.tg_stickiness == null ? [] : [var.tg_stickiness]
+    content {
+      type            = stickiness.value.type
+      enabled         = stickiness.value.enabled
+      cookie_duration = stickiness.value.cookie_duration
+    }
   }
 }
 

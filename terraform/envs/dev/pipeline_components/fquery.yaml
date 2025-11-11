@@ -9,14 +9,21 @@ phases:
         inputs:
           commands:
             - |
+              set -e
               apt update
               apt install -y git python3 python3-venv python3-pip
 
-              git clone https://github.com/Aohk22/fcj-project-1.git /app
-              cd /app
-
+              # Run setup as ubuntu user
+              sudo -u ubuntu bash <<'EOF'
+              set -e
+              cd /home/ubuntu
+              git clone https://github.com/Aohk22/fcj-project-1.git app
+              cd app
               git switch query-service
 
               python3 -m venv .venv
               source .venv/bin/activate
+              pip install --upgrade pip
               pip install -r requirements.txt
+              EOF
+

@@ -44,6 +44,12 @@ module "groups_service_web" {
   tg_port     = 8000
   tg_protocol = "HTTP"
   tg_vpc_id   = module.vpc.id
+  tg_dereg_delay = 3600
+  tg_stickiness = {
+    enabled         = true
+    type            = "lb_cookie"
+    cookie_duration = 3600
+  }
 
   hc_path     = "/"
   hc_port     = "8000"

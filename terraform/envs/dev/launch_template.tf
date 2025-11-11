@@ -40,7 +40,7 @@ module "launch_template_fhandle" {
   key_name                  = aws_key_pair.terraform-key.key_name
   iam_instance_profile_name = module.instance_profile_dynamodb.instance_profile_name
   image_id                  = data.aws_ami.ami_fhandle.id
-  instance_type             = "t3.micro"
+  instance_type             = "t3.small"
   network_interfaces = {
     public_ip          = false
     security_group_ids = [aws_security_group.allow_all.id]
