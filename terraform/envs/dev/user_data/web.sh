@@ -2,7 +2,8 @@
 
 apt update -y
 apt install -y git unzip
-curl -fsSL https://bun.sh/install | bash
+snap install bun-js
+# curl -fsSL https://bun.sh/install | bash
 source /root/.bashrc
 
 git clone https://github.com/Aohk22/fcj-project-1.git /app
