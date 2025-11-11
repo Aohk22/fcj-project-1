@@ -1,14 +1,13 @@
 #!/bin/bash
 
 apt update -y
-apt install -y git python3 python3-venv python3-pip
-
-mkdir /app
-cd /app
-git clone https://github.com/Aohk22/fcj-project-1.git
-cd fcj-project-1
+apt install -y git
+curl -fsSL https://bun.sh/install | bash
+source ~/.bashrc
+git clone https://github.com/Aohk22/fcj-project-1.git repo
+cd repo/
 git switch webserver-ec2
-python3 -m venv .venv
-source .venv/bin/activate
-pip install flask flask-cors requests
-nohup python3 server.py >/var/log/http.log 2>&1 &
+cp app /app
+
+cd /app
+nohup bun run index.ts >/var/log/http.log 2>&1 &

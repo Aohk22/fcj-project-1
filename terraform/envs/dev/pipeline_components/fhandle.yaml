@@ -11,10 +11,10 @@ phases:
             - |
               apt update
               apt install -y git ssdeep python3 python3-venv python3-pip
-              apt install -y javasdk-21-jdk
+              apt install -y openjdk-21-jdk
 
               wget https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_11.4.2_build/ghidra_11.4.2_PUBLIC_20250826.zip
-              unzip ghidra_11.4.2_PUBLIC_20250826.zip -d /opt/ghidra_11.4.2_PUBLIC
+              unzip ghidra_11.4.2_PUBLIC_20250826.zip -d /opt/
 
               mkdir /app
               cd /app

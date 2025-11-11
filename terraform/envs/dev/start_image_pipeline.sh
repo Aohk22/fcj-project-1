@@ -22,9 +22,9 @@ done
 # wait for image.
 for build_version in "${arn_build_versions[@]}"; do
   echo "Polling ${build_version}..."
+  prev_status="_none"
   while
     status="$(aws imagebuilder get-image --image-build-version-arn "$build_version" | jq -r '.image.state.status')"
-    prev_status="_none"
     if [[ "$prev_status" != "${status}" ]]; then
       echo "Status: ${status}"
       prev_status="${status}"
