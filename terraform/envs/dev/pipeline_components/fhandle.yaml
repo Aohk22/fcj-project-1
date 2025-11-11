@@ -9,19 +9,29 @@ phases:
         inputs:
           commands:
             - |
+              set -e
               apt update
-              apt install -y git ssdeep python3 python3-venv python3-pip unzip
-              apt install -y openjdk-21-jdk
+              apt install -y git ssdeep python3 python3-venv python3-pip unzip openjdk-21-jdk wget
 
-              su ubuntu
-              wget https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_11.4.2_build/ghidra_11.4.2_PUBLIC_20250826.zip
-              sudo unzip ghidra_11.4.2_PUBLIC_20250826.zip -d /opt/
+              # Create and give user ownership
+              mkdir -p /opt/ghidra
+              chown ubuntu:ubuntu /opt/ghidra
+
+              # Run remaining commands as ubuntu
+              sudo -u ubuntu bash <<'EOF'
+              set -e
+              cd /opt/ghidra
+              wget https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_11.4.2_build/ghidra_11.4.2_PUBLIC_20250826.zip -O ghidra.zip
+              unzip ghidra.zip
+              rm ghidra.zip
 
               git clone https://github.com/Aohk22/fcj-project-1.git ~/app
               cd ~/app
-
               git switch file-processing-service
 
               python3 -m venv .venv
               source .venv/bin/activate
+              pip install --upgrade pip
               pip install -r requirements.txt
+              EOF
+

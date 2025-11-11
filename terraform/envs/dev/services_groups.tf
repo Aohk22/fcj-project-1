@@ -41,12 +41,12 @@ module "groups_service_fquery" {
 module "groups_service_web" {
   source      = "../../modules/service_auto_scale"
   tg_name     = "web-tg"
-  tg_port     = 80
+  tg_port     = 8000
   tg_protocol = "HTTP"
   tg_vpc_id   = module.vpc.id
 
   hc_path     = "/"
-  hc_port     = "80"
+  hc_port     = "8000"
   hc_protocol = "HTTP"
   hc_matcher  = "200"
 
