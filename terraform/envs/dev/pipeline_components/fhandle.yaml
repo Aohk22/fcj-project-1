@@ -13,11 +13,12 @@ phases:
               apt install -y git ssdeep python3 python3-venv python3-pip unzip
               apt install -y openjdk-21-jdk
 
+              su ubuntu
               wget https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_11.4.2_build/ghidra_11.4.2_PUBLIC_20250826.zip
-              unzip ghidra_11.4.2_PUBLIC_20250826.zip -d /opt/
+              sudo unzip ghidra_11.4.2_PUBLIC_20250826.zip -d /opt/
 
-              git clone https://github.com/Aohk22/fcj-project-1.git /app
-              cd /app
+              git clone https://github.com/Aohk22/fcj-project-1.git ~/app
+              cd ~/app
 
               git switch file-processing-service
 
