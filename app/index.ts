@@ -5,7 +5,7 @@ const server = Bun.serve({
 	routes: {
 		"/": index,
 		"/analyze": async (req) => {
-      const res = await fetch('http://192.168.44.167:8001/upload/', {
+      const res = await fetch('http:///local-api.dev.lan/upload/', {
         method: 'POST',
         headers: {
           'Content-Type': await req.headers.get('Content-Type'),
