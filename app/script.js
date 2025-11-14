@@ -5,6 +5,24 @@ const formHash = document.getElementById('form-hash');
 const formFile = document.getElementById('form-file');
 const result = document.getElementById('result-container');
 
+function callAPI(path, data) {
+  fetch(path, {
+    method: "POST",
+    body: data
+  })
+    .then(async (res) => {
+      if (res.ok) return res.json();
+      throw new Error(await res.text());
+    })
+    .then((resJson) => {
+      localStorage.setItem('localData', JSON.stringify(resJson));
+      result.replaceChildren(renderResult(resJson));
+    })
+    .catch((err) => {
+      resultStatus.innerHTML = `${err}`;
+    });
+}
+
 formHash.addEventListener("submit", (event) => {
   event.preventDefault();
 
@@ -15,22 +33,7 @@ formHash.addEventListener("submit", (event) => {
   } else {
     resultStatus.innerHTML = `Searching for ${hash}...`;
 
-    fetch('/query', {
-      method: "POST",
-      headers: { "Content-Type": "text/html" },
-      body: hash
-    })
-      .then(async (res) => {
-        if (res.ok) return res.json();
-        throw new Error(await res.text());
-      })
-      .then((resJson) => {
-        localStorage.setItem('localData', JSON.stringify(resJson));
-        result.replaceChildren(renderResult(resJson));
-      })
-      .catch((err) => {
-        resultStatus.innerHTML = `${err}`;
-      });
+    callAPI('/query', hash);
   }
 });
 
@@ -46,18 +49,6 @@ formFile.addEventListener("submit", (event) => {
 
     const file = currFiles[0];
 
-    fetch('/analyze', {
-      method: 'POST',
-      body: file
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        localStorage.setItem('localData', JSON.stringify(data));
-        result.innerHTML = "";
-        result.appendChild(jsonRenderResult(data));
-      })
-      .catch((err) => {
-        resultStatus.innerHTML = `Error: ${err.detail}`;
-      });
+    callAPI('/analyze', file);
   }
 });
