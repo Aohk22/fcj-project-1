@@ -1,5 +1,9 @@
+* {
+  font-family: 'Courier New', sans-serif;
+}
+
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Courier New', sans-serif;
   margin: 0;
   padding: 0;
   background-color: #f0f2f5;
@@ -13,7 +17,6 @@ header {
   color: white;
   padding: 20px;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 header h1 {
@@ -37,65 +40,60 @@ form {
   background: white;
   padding: 25px;
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   margin-bottom: 30px;
 }
 
-input[type="file"] {
-  margin-bottom: 20px;
-  font-size: 1em;
-}
+/* input[type="file"] { */
+/*   margin-bottom: 20px; */
+/*   font-size: 1em; */
+/* } */
 
-button {
-  background-color: #28a745;
-  color: #fff;
-  border: none;
-  padding: 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1em;
-  transition: background 0.3s;
-}
+/* button { */
+/*   background-color: #28a745; */
+/*   color: #fff; */
+/*   border: none; */
+/*   padding: 12px; */
+/*   border-radius: 6px; */
+/*   cursor: pointer; */
+/*   font-size: 1em; */
+/*   transition: background 0.3s; */
+/* } */
 
-button:hover {
-  background-color: #218838;
-}
+/* button:hover { */
+/*   background-color: #218838; */
+/* } */
 
 #result-container {
   width: 100%;
-  max-width: 800px;
+  /* max-width: 800px; */
   background: white;
   border-radius: 10px;
   padding: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  /* box-shadow: 0 4px 12px rgba(0,0,0,0.1); */
   font-family: monospace;
   white-space: pre-wrap;
   word-wrap: break-word;
   overflow-x: auto;
 }
 
-.json-key { color: #d73a49; font-weight: bold; }
-.json-string { color: #032f62; }
-.json-number { color: #005cc5; }
-.json-boolean { color: #e36209; }
-.json-null { color: #6a737d; }
-
-#span-strings-inner {
+.long-arr {
   display: block;
   overflow: auto;
   max-height: 200px;
 }
 
-#span-decompile-inner {
+.long-string {
   display: block;
   overflow: auto;
   max-height: 400px;
 }
 
-/* #span-strings > h3 { */
-/*   color: #d73a49 */
-/* } */
-/**/
-/* #span-decompile > h3 { */
-/*   color: #d73a49 */
-/* } */
+.parsed-json h2, .parsed-json h3 {
+  color: purple;
+}
+
+.parsed-json h4 {
+  color: #572f75;
+  margin: auto;
+  margin-bottom: 3px;
+}

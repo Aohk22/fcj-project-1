@@ -1,22 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
-    <title>Static Malware Analysis</title>
+    <title>Static File Analysis</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <h1>Static Malware Analysis</h1>
+      <h1>Static File Analysis</h1>
     </header>
     <main>
-        <form method="post" enctype="multipart/form-data" id="form">
-            <input type="file" id="fileItem" name="file" required />
-            <button type="submit">Analyze File</button>
-        </form>
 
-        <div id="result-container">Select a file and click "Analyze File".</div>
+      <form id="form-hash" method="get" enctype="text/html">
+        <input type="text" name="hash" placeholder="SHA256"/>
+        <button type="submit">Submit</button>
+      </form>
+
+      <form id="form-file" method="post" enctype="multipart/form-data">
+        <input type="file" name="file"/>
+        <button type="submit">Submit</button>
+      </form>
+
+      <div id="result-container"><p id="result-status">Submit file or hash lookup.</p></div>
     </main>
-    <script src="script.js"></script>
-</body>
+  </body>
+  <script src="script.js"></script>
 </html>
