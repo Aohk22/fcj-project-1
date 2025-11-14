@@ -1,3 +1,4 @@
+from pefile import Union
 from pydantic import BaseModel
 from app.types.pe import *
 from app.types.elf import *
@@ -20,13 +21,16 @@ class FileGeneral(BaseModel):
     strings: list[str]
     decomp: str
 
+
 class FilePE(BaseModel):
-    general: FileGeneral
     meta: FilePEMeta
     peSections: list[FilePESection]
 
 class FileELF(BaseModel):
-    general: FileGeneral
     elfHeader: FileELFHeader
-    symEntries: list[FileELFSymEntry]
+    symEntries: list[FileELFSymEntry] | FileELFSymEntry
     elfSegments: list[FileELFSegment] | FileELFSegment
+
+class FileAll(BaseModel):
+    general: FileGeneral
+    typed: Union[FilePE, FileELF]

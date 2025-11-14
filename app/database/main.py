@@ -1,21 +1,18 @@
 import json
 from decimal import Decimal
-from app.types.main import FileELF, FilePE
-from boto3.dynamodb.types import TypeSerializer
+from app.types.main import FileAll
 
 TABLE_NAME = 'analysis_results'
 
-def insertReport(ddb, report: FilePE | FileELF):
+def insertReport(ddb, report: FileAll):
     data = json.loads(report.model_dump_json(), parse_float=Decimal)
-    s = TypeSerializer()
-    serialized = s.serialize(data)
+    # data = report.model_dump()
 
     table = ddb.Table(TABLE_NAME)
     response = table.put_item(
         Item={
-            'file_hash': data['hashes']['sha256'],
-            'report_type': 'static',
-            'data': serialized,
+            'file_hash': data['general']['hashes']['sha256'],
+            'data': data,
         }
     )
-    return response
+    return response['ResponseMetadata']['HTTPStatusCode']

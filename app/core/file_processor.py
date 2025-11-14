@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import hashlib
 import pefile
 import subprocess as sp
@@ -95,10 +96,13 @@ def _getELFHeader() -> FileELFHeader:
         machine = __getField(head[7])
     )
 
-def _getELFSymEntries() -> list[FileELFSymEntry]:
-    result: list[FileELFSymEntry] = list()
-
+# def _getELFSymEntries() -> list[FileELFSymEntry]:
+def _getELFSymEntries() -> FileELFSymEntry | list[FileELFSymEntry]:
     sym = sp.run(['readelf', '-s', TEMP_BIN_FILE], capture_output=True, text=True).stdout
+
+    # return FileELFSymEntry(content=sym)
+
+    result: list[FileELFSymEntry] = list()
     sym = sym.split('\n')[3:]
 
     for i in range(len(sym)):
@@ -120,6 +124,7 @@ def _getELFSegments() -> FileELFSegment:
 
 # Decompilation
 def _getDecompilation(conts: bytes) -> str:
+    return "test"
     with tempfile.TemporaryDirectory() as tempdir:
         infile = tempfile.NamedTemporaryFile(dir=tempdir, delete=False)
         infile.write(conts)
@@ -159,9 +164,9 @@ def _getDecompilation(conts: bytes) -> str:
             return f.read()
 
 # Main.
-def analyzeFile(raw: bytes) -> FilePE | FileELF:
+def analyzeFile(raw: bytes) -> FileAll:
     open(TEMP_BIN_FILE, 'wb').write(raw)
-    result: FilePE | FileELF | None = None
+    result: FileAll | None = None
 
     general = FileGeneral(
         hashes = FileHashes(
@@ -179,11 +184,14 @@ def analyzeFile(raw: bytes) -> FilePE | FileELF:
     )
 
     if MAGIC_ELF in raw[:4]:
-        result = FileELF(
-            general = general,
+        fELF = FileELF(
             elfHeader = _getELFHeader(),
             symEntries = _getELFSymEntries(),
             elfSegments = _getELFSegments(),
+        )
+        result = FileAll(
+            general = general,
+            typed = fELF
         )
 
     elif MAGIC_PE in raw[:2]:
@@ -197,10 +205,14 @@ def analyzeFile(raw: bytes) -> FilePE | FileELF:
             crcReal = pe.generate_checksum(),
         )
 
-        result = FilePE(
-            general = general,
+        fPE = FilePE(
             meta = meta,
             peSections = [_getPESections(section) for section in pe.sections],
+        )
+
+        result = FileAll(
+            general = general,
+            typed = fPE
         )
     else:
         raise Exception('File type not supported yet.')

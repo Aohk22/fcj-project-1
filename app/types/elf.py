@@ -14,6 +14,9 @@ class FileELFSymEntry(BaseModel):
     vis: str
     name: str
 
+# class FileELFSymEntry(BaseModel):
+#     content: str
+
 # class FileELFSegment(BaseModel):
 #     offset: int
 #     addrVirt: int
