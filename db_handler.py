@@ -1,17 +1,13 @@
-# query-service/db_handler.py
-import boto3
 from boto3.dynamodb.conditions import Key
 from decimal import Decimal
-import json
 
 TABLE_NAME = 'analysis_results'
 
-def get_static_report_by_hash(file_hash: str) -> dict | None:
-    dynamodb = boto3.resource('dynamodb', region_name='ap-southeast-2')
-    table = dynamodb.Table(TABLE_NAME)
+def get_static_report_by_hash(ddb, file_hash: str) -> dict | None:
+    table = ddb.Table(TABLE_NAME)
 
     response = table.query(
-        KeyConditionExpression=Key('file_hash').eq(file_hash) & Key('report_type').eq('static')
+        KeyConditionExpression=Key('file_hash').eq(file_hash)
     )
     items = response.get('Items', [])
 
