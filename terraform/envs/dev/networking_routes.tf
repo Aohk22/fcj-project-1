@@ -5,6 +5,14 @@ resource "aws_internet_gateway" "igw_main" {
     Name = "igw_main"
   }
 }
+
+resource "aws_vpc_endpoint" "endpoint_dynamodb" {
+  vpc_id = module.vpc.id
+  service_name = "com.amazonaws.ap-southeast-2.dynamodb"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids = [aws_route_table.route_table_private.id]
+}
+
 resource "aws_route_table" "route_table_public" {
   vpc_id = module.vpc.id
 
