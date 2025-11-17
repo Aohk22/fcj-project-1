@@ -1,4 +1,4 @@
-from pefile import Union
+from typing import Union
 from pydantic import BaseModel
 from app.types.pe import *
 from app.types.elf import *
@@ -20,6 +20,7 @@ class FileGeneral(BaseModel):
     fileType: FileType
     strings: list[str]
     decomp: str
+    isMalware: bool | None 
 
 
 class FilePE(BaseModel):

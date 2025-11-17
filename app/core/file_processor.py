@@ -25,6 +25,30 @@ GHIDRA_INSTALL = os.path.normpath('/opt/ghidra_11.4.2_PUBLIC')
 GHIDRA_HEADLESS = os.path.join(GHIDRA_INSTALL, 'support', 'analyzeHeadless')
 GHIDRA_APP_PROPERTIES = os.path.join(GHIDRA_INSTALL, 'Ghidra', 'application.properties')
 
+MALWARE_HASH_DB_PATH = os.path.join(DIR_BASE, 'sha256_malware_1.txt')
+MALWARE_HASHES = set()
+
+# Load malware hashes once when the module is loaded
+def _loadMalwareHashes():
+    global MALWARE_HASHES
+    if not MALWARE_HASHES: 
+        try:
+            with open(MALWARE_HASH_DB_PATH, 'r') as f:
+                for line in f:
+                    hash_value = line.strip()
+                    if hash_value:
+                        MALWARE_HASHES.add(hash_value)
+            print(f"Loaded {len(MALWARE_HASHES)} malware hashes from {MALWARE_HASH_DB_PATH}")
+        except FileNotFoundError:
+            print(f"Malware hash database not found at {MALWARE_HASH_DB_PATH}. Malware detection will be skipped.")
+        except Exception as e:
+            print(f"Error loading malware hashes: {e}")
+
+_loadMalwareHashes() 
+
+def _checkMalwareBySha256(sha256_hash: str) -> bool:
+    return sha256_hash in MALWARE_HASHES
+
 # File helpers.
 def _getHashSsdeep(raw: bytes) -> str:
     output = sp.run(['ssdeep'], input=raw, capture_output=True).stdout
@@ -168,11 +192,14 @@ def analyzeFile(raw: bytes) -> FileAll:
     open(TEMP_BIN_FILE, 'wb').write(raw)
     result: FileAll | None = None
 
+    sha256_hash = hashlib.sha256(raw).hexdigest()
+    is_malware = _checkMalwareBySha256(sha256_hash)
+
     general = FileGeneral(
         hashes = FileHashes(
             md5 = hashlib.md5(raw).hexdigest(),
             sha1 = hashlib.sha1(raw).hexdigest(),
-            sha256 = hashlib.sha256(raw).hexdigest(),
+            sha256 = sha256_hash, 
             ssdeep = _getHashSsdeep(raw)
         ),
         fileType = FileType(
@@ -180,7 +207,8 @@ def analyzeFile(raw: bytes) -> FileAll:
             trid = _getFileTypeTrid(raw)
         ),
         strings = _getStrings(),
-        decomp = _getDecompilation(raw)
+        decomp = _getDecompilation(raw),
+        isMalware = is_malware 
     )
 
     if MAGIC_ELF in raw[:4]:
