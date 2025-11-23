@@ -1,0 +1,146 @@
+/* https://colorhunt.co/palette/37353e44444e715a5ad3dad9 */
+
+.hidden {
+  display: none;
+}
+
+* {
+  font-family: 'Courier New', sans-serif;
+  color: #D3DAD9;
+}
+
+button {
+  background-color: #44444E;
+  border-style: solid;
+  border-color: #44444E;
+  border-width: 1px;
+}
+
+button:hover {
+  border-color: #D3DAD9;
+}
+
+input[type=text] {
+  background-color: #44444E;
+  border-style: solid;
+  border-color: #44444E;
+  border-width: 3px;
+  outline: none;
+}
+
+input[type=text]:focus {
+  border: 3px solid white;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #37353E;
+  display: flex;
+  flex-direction: column;
+
+  header {
+    background-color: #44444E;
+    padding: 5px;
+    text-align: center;
+
+    h1 {
+      font-size: 2em;
+      color: #D3DAD9;
+    }
+  }
+
+  form {
+    display: flex;
+    flex-direction: row;
+    padding: 25px;
+    width: 30vw;
+    justify-content: space-between;
+  }
+}
+
+#forms {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  #form-file {
+    font-size: 12px;
+    div {
+      /* Style the label as a button. */
+      label {
+        padding: 2px;
+        background-color: #44444E;
+        border-style: solid;
+        border-color: #44444E;
+        border-width: 1px;
+      }
+      label:hover {
+        border-color: #D3DAD9;
+      }
+    }
+  }
+}
+
+#result-container {
+  padding: 10px;
+  margin: 1em;
+  color: #D3DAD9;
+  white-space: pre;
+  .parsed-json {
+    h2 {
+      color: #8A7575;
+      border-bottom: solid #44444E;
+    }
+    h3 {
+      color: #8A7575;
+      margin-left: 1em;
+      margin-bottom: 0.5em;
+    }
+    h4 {
+      color: #856E6E;
+      margin: auto;
+      margin-left: 2em;
+      margin-bottom: 3px;
+    }
+
+    > span.string {
+      margin-left: 2em;
+    }
+
+    span.string-long {
+      display: flex;
+      flex-direction: column;
+      margin-left: 2em;
+      max-height: 30em;
+      overflow-y: scroll;
+      overflow-wrap: break-word;
+    }
+
+    > span[class^="array-"] {
+      display: flex;
+      flex-direction: column;
+      margin-left: 2em;
+      overflow: auto;
+      max-height: 20em;
+    }
+
+    span.array-string {
+    }
+
+    span.array-object {
+      max-height: 30em;
+      .object {
+        margin: 0.5em;
+        padding: 5px;
+        display: flex;
+        flex-direction: column;
+        border-bottom-style: solid;
+        border-color: #715A5A;
+        border-width: 1px;
+        > .string {
+        }
+      }
+    }
+  }
+}
