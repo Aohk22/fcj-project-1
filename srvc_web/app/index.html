@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Static File Analysis</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+  </head>
+  <body>
+    <header>
+      <h1>Static File Analysis</h1>
+    </header>
+
+    <section id="forms">
+      <form id="form-hash" method="get" enctype="text/html">
+        <input type="text" name="hash" placeholder="SHA256"/>
+        <button type="submit">Submit</button>
+      </form>
+      <form id="form-file" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" id="files" class="hidden"/>
+        <div>
+          <label for="files">Select file</label>
+          <span id="file-name" placeholder="(empty)">(empty)</span>
+        </div>
+        <button type="submit">Submit</button>
+      </form>
+    </section>
+
+    <section id="result-container"><p id="result-status">Submit file or hash lookup.</p></section>
+
+  </body>
+  <script>
+  document.getElementById('files').onchange = function () {
+    document.getElementById('file-name').innerHTML = this.value.replace(/.*[\/\\]/,'');
+  };
+  </script>
+  <script src="script.js"></script>
+</html>
