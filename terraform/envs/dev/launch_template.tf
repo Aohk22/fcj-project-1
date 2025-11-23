@@ -11,8 +11,8 @@ data "aws_ami" "ami_fhandle" {
   most_recent = true
   owners      = ["self"]
   filter {
-    name   = "name"
-    values = ["fhandle_img*"]
+    name   = "tag:Ec2ImageBuilderArn"
+    values = ["arn:aws:imagebuilder:ap-southeast-2:005716755011:image/fhandle-img-recipe/1.0.0/*"]
   }
 }
 
@@ -20,8 +20,8 @@ data "aws_ami" "ami_fquery" {
   most_recent = true
   owners      = ["self"]
   filter {
-    name   = "name"
-    values = ["fquery_img*"]
+    name   = "tag:Ec2ImageBuilderArn"
+    values = ["arn:aws:imagebuilder:ap-southeast-2:005716755011:image/fhandle-img-recipe/1.0.0/*"]
   }
 }
 
