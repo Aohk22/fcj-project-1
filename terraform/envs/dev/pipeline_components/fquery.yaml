@@ -17,9 +17,8 @@ phases:
               sudo -u ubuntu bash <<'EOF'
               set -e
               cd /home/ubuntu
-              git clone https://github.com/Aohk22/fcj-project-1.git app
-              cd app
-              git switch query-service
+              git clone https://github.com/Aohk22/fcj-project-1.git ~/app
+              cd ~/app/srvc_query
 
               python3 -m venv .venv
               source .venv/bin/activate

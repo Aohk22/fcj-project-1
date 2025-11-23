@@ -20,9 +20,8 @@ phases:
               sudo unzip ghidra_11.4.2_PUBLIC_20250826.zip -d /opt/
               rm ghidra_11.4.2_PUBLIC_20250826.zip
 
-              git clone https://github.com/Aohk22/fcj-project-1.git ~/app
-              cd ~/app
-              git switch file-processing-service
+              git clone https://github.com/Aohk22/fcj-1-file-analyzer.git ~/app
+              cd ~/app/srvc_file
 
               python3 -m venv .venv
               source .venv/bin/activate

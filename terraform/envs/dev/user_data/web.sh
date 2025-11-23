@@ -10,9 +10,7 @@ snap install bun-js
 sudo -u ubuntu bash <<'EOF'
 set -e
 cd /home/ubuntu
-git clone https://github.com/Aohk22/fcj-project-1.git app
-cd app
-git switch webserver-ec2
-cd app
+git clone https://github.com/Aohk22/fcj-1-file-analyzer.git app
+cd app/srvc_web/app
 nohup bun run index.ts >~/http.log 2>&1 &
 EOF

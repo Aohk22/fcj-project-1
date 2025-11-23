@@ -39,11 +39,11 @@ module "groups_service_fquery" {
 }
 
 module "groups_service_web" {
-  source      = "../../modules/service_auto_scale"
-  tg_name     = "web-tg"
-  tg_port     = 8000
-  tg_protocol = "HTTP"
-  tg_vpc_id   = module.vpc.id
+  source         = "../../modules/service_auto_scale"
+  tg_name        = "web-tg"
+  tg_port        = 8001
+  tg_protocol    = "HTTP"
+  tg_vpc_id      = module.vpc.id
   tg_dereg_delay = 3600
   tg_stickiness = {
     enabled         = true

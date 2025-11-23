@@ -2,7 +2,7 @@ Push on 'dev' branch first, combine features using git rebase.
 
 ## Summary
 
-![](high-level-view-2.drawio.png)
+![](diagrams/high-level-view-2.drawio.png)
 
 1. User sends analysis request for file.
 2. Web Server sends request to Query Service. (Query using file hash)
@@ -17,8 +17,15 @@ Push on 'dev' branch first, combine features using git rebase.
 
 ## Diagram for AWS
 
-![](high-level-view.drawio.png)
+![](diagrams/high-level-view.drawio.png)
 
 **To do**
 
-- Fix terraform due to branch change.
+- [] Fix diagram.
+
+- [x] Fix terraform due to branch change.
+
+- File handling.
+    - Create unit tests.
+        - [x] Core functions.
+        - [] Database.
