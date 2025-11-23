@@ -1,4 +1,4 @@
-Push on 'dev' branch first.
+Push on 'dev' branch first, combine features using git rebase.
 
 ## Summary
 
