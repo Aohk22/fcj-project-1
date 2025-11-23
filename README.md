@@ -21,11 +21,11 @@ Push on 'dev' branch first, combine features using git rebase.
 
 **To do**
 
-- [] Fix diagram.
+- [ ] Fix diagram
 
-- [x] Fix terraform due to branch change.
+- [x] Fix terraform due to branch change
 
-- File handling.
-    - Create unit tests.
-        - [x] Core functions.
-        - [] Database.
+- [ ] File handling
+    - [ ] Create unit tests
+        - [x] Core functions
+        - [ ] Database
