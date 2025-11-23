@@ -1,4 +1,4 @@
-** Services code have been moved to different branches.
+Push on 'dev' branch first.
 
 ## Summary
 
@@ -19,11 +19,6 @@
 
 ![](high-level-view.drawio.png)
 
-### To do
+**To do**
 
-- CI/CD: push -> ami image build -> instance refresh.
-  - Create Image builder pipeline.
-  - Fix Terraform launch template to use new ami image.
-  - Update workflow files for
-    - Image build, instance refresh
-- Terraform code refactor
+- Fix terraform due to branch change.
