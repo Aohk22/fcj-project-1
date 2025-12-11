@@ -17,15 +17,4 @@ Push on 'dev' branch first, combine features using git rebase.
 
 ## Diagram for AWS
 
-![](diagrams/high-level-view.drawio.png)
-
-**To do**
-
-- [ ] Fix diagram
-
-- [x] Fix terraform due to branch change
-
-- [ ] File handling
-    - [ ] Create unit tests
-        - [x] Core functions
-        - [ ] Database
+<img width="801" height="1041" alt="high-level-view-finalOfFinal drawio" src="https://github.com/user-attachments/assets/320e1613-f8d5-4206-a4af-57c3fcb2957b" />
